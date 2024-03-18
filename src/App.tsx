@@ -13,6 +13,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import config from "./config";
 import {AppThemeProvider, useAppTheme} from "./hooks/useTheme";
+import {PriceProvider} from "./providers/PriceProvider";
 
 function AppContent() {
   const theme = useAppTheme()
@@ -21,7 +22,9 @@ function AppContent() {
       <ConfigProvider theme={getAntdThemeConfig(theme)}>
         <BrowserRouter>
           <WagmiConfig config={wagmiConfig}>
-            <AppRoutes />
+            <PriceProvider>
+              <AppRoutes />
+            </PriceProvider>
           </WagmiConfig>
         </BrowserRouter>
       </ConfigProvider>

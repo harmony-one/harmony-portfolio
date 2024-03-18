@@ -7,14 +7,14 @@ import { publicProvider } from 'wagmi/providers/public'
 import {EthereumClient} from "@web3modal/ethereum";
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
-import { arbitrumGoerli, arbitrum } from 'wagmi/chains'
+import { harmonyOne } from 'wagmi/chains'
 import config from '../config'
 
-let supportedChain: Chain = arbitrumGoerli
+let supportedChain: Chain = harmonyOne
 
-if(config.chainId === arbitrum.id) {
-  supportedChain = arbitrum
-}
+// if(config.chainId === arbitrum.id) {
+//   supportedChain = arbitrum
+// }
 
 // if(config.rpcUrl) {
 //   supportedChain.rpcUrls = {

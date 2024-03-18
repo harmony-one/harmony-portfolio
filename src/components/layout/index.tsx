@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {Box, Text} from "grommet";
 import {Outlet} from "react-router-dom";
 import {AppMenu} from './Menu'
@@ -6,10 +6,31 @@ import {ConnectWallet} from "./ConnectWallet";
 import {Divider} from "antd";
 import {AppTheme, useAppTheme, useDispatchAppTheme} from "../../hooks/useTheme";
 import {Moon, Sun} from "grommet-icons";
+import {useAccount, useNetwork} from "wagmi";
+import {switchNetwork} from "@wagmi/core";
+import config from '../../config'
+import useIsTabActive from "../../hooks/useTabActive";
 
 export const AppLayout = () => {
   const theme = useAppTheme()
   const setTheme = useDispatchAppTheme()
+  const { address: walletAddress, isConnected } = useAccount()
+  const { chain, chains } = useNetwork()
+  const isTabActive = useIsTabActive()
+
+
+  useEffect(() => {
+    if(isTabActive && isConnected && chain && (chain.unsupported || chain.id !== config.chainId)) {
+      const supportedChain = chains.find(item => item.id === config.chainId)
+      if(supportedChain && supportedChain.id) {
+        switchNetwork({
+          chainId: supportedChain.id
+        }).catch(e => {
+          console.error('Failed to switch network', e)
+        })
+      }
+    }
+  }, [isTabActive, isConnected, chain, chains]);
 
   return <Box
     direction={'row'}

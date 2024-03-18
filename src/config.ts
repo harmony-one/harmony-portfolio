@@ -1,8 +1,8 @@
-import {arbitrum} from "wagmi/chains";
+import {harmonyOne} from "wagmi/chains";
 
 const config = {
-  chainId: arbitrum.id,
-  walletConnectProjectId: '12345'
+  chainId: harmonyOne.id,
+  walletConnectProjectId: '38bc2aa65f644b1ca65713ede070571e'
 }
 
 export default config
