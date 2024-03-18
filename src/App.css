@@ -1,0 +1,16 @@
+html, body {
+    height: 100%;
+}
+
+/*https://colorhunt.co/palette/27374d526d829db2bfdde6ed*/
+.ant-menu-light {
+    background: white!important;
+}
+
+.ant-menu-dark {
+    background: #1e1e1e!important;
+}
+
+.ant-menu-dark .ant-menu-sub {
+    background: #1e1e1e!important;
+}
