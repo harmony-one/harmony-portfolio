@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {CrownOutlined} from '@ant-design/icons';
+import {CompassOutlined, LayoutOutlined} from '@ant-design/icons';
 import type {MenuProps} from 'antd';
 import {Menu} from 'antd';
 import {appRoutes} from "../../constants";
@@ -38,8 +38,8 @@ export const AppMenu = () => {
   const navigate = useNavigate()
   const [selectedKey, setSelectedKey] = useState(getPageByRoute(location.pathname))
   const items: MenuItem[] = [
-    getItem('Dashboard', appRoutes.dashboard, <CrownOutlined />),
-    getItem('Explore', appRoutes.explore, <CrownOutlined />),
+    getItem('Dashboard', appRoutes.dashboard, <LayoutOutlined />),
+    getItem('Explore', appRoutes.explore, <CompassOutlined />),
   ];
 
   return <Menu
