@@ -8,12 +8,12 @@ export enum AppTheme {
 const LSKey = 'portfolio_app_theme_v1'
 
 const getInitialAppTheme = () => {
-  try {
-    const data = localStorage.getItem(LSKey)
-    if(data && Object.keys(AppTheme).includes(data)) {
-      return data as AppTheme
-    }
-  } catch (e) {}
+  // try {
+  //   const data = localStorage.getItem(LSKey)
+  //   if(data && Object.keys(AppTheme).includes(data)) {
+  //     return data as AppTheme
+  //   }
+  // } catch (e) {}
   return AppTheme.dark
 }
 
@@ -26,7 +26,7 @@ export const AppThemeProvider = ({ children }: any) => {
   const [theme, setTheme] = useState(initialTheme);
 
   useEffect(() => {
-    console.log('update theme', theme)
+    console.log('Update theme', theme)
     localStorage.setItem(LSKey, theme)
   }, [theme]);
 

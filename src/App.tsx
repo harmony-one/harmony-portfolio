@@ -8,17 +8,17 @@ import './App.css'
 import {WagmiConfig} from "wagmi";
 import {ethereumClient, wagmiConfig} from "./modules/wagmi";
 import {Web3Modal} from "@web3modal/react";
-import {lightTheme} from "./theme/grommet";
+import {darkTheme, lightTheme} from "./theme/grommet";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import config from "./config";
 import {AppThemeProvider, useAppTheme} from "./hooks/useTheme";
 import {PriceProvider} from "./providers/PriceProvider";
 
 function AppContent() {
   const theme = useAppTheme()
+
   return (
-    <Grommet full theme={lightTheme} themeMode={'light'}>
+    <Grommet full theme={theme === 'light' ? lightTheme : darkTheme} themeMode={theme}>
       <ConfigProvider theme={getAntdThemeConfig(theme)}>
         <BrowserRouter>
           <WagmiConfig config={wagmiConfig}>

@@ -5,14 +5,17 @@ export const palette = {
   Black: '#0E0C1D',
 };
 
-export const grommet = {
+export const darkTheme = {
   global: {
     focus: {
       border: {
         color: "transparent",
       },
     },
-    colors: {},
+    colors: {
+      backgroundContent: '#3C3C3C',
+      backgroundMenu: '#323232'
+    },
     palette,
     select: {
       clear: {
@@ -103,9 +106,11 @@ export const grommet = {
   }
 };
 
-export const lightTheme = deepMerge(grommet, {
+export const lightTheme = deepMerge(darkTheme, {
   global: {
     colors: {
+      backgroundContent: 'white',
+      backgroundMenu: 'white'
     },
   },
 });

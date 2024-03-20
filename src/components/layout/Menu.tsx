@@ -1,28 +1,10 @@
-import React, {useState} from 'react'
-import {CompassOutlined, LayoutOutlined} from '@ant-design/icons';
-import type {MenuProps} from 'antd';
-import {Menu} from 'antd';
+import React, {ReactNode, useState} from 'react'
 import {appRoutes} from "../../constants";
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAppTheme, AppTheme} from "../../hooks/useTheme";
-
-type MenuItem = Required<MenuProps>['items'][number];
-
-function getItem(
-  label: React.ReactNode,
-  key?: React.Key | null,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-  type?: 'group',
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  } as MenuItem;
-}
+import {Box, Text} from "grommet";
+import {useAppTheme} from "../../hooks/useTheme";
+import {ReactComponent as LayoutIcon} from '../../assets/layout.svg'
+import {ReactComponent as ExplorerIcon} from '../../assets/explorer.svg'
 
 const getPageByRoute = (route: string, defaultRoute = appRoutes.dashboard) => {
   const rawRoute = route.replace('/', '')
@@ -32,26 +14,47 @@ const getPageByRoute = (route: string, defaultRoute = appRoutes.dashboard) => {
   return defaultRoute
 }
 
+const MenuItem = (props: {
+  text: string;
+  icon: ReactNode;
+  isSelected: boolean
+  onClick: () => void
+}) => {
+  const { text, icon, isSelected, onClick } = props
+
+  const weight = isSelected ? 'bold' : 400
+
+  return <Box direction={'row'} gap={'12px'} onClick={onClick}>
+    <Box>{icon}</Box>
+    <Box>
+      <Text weight={weight} size={'17px'}>{text}</Text>
+    </Box>
+  </Box>
+}
+
 export const AppMenu = () => {
   const theme = useAppTheme()
   const location = useLocation();
   const navigate = useNavigate()
   const [selectedKey, setSelectedKey] = useState(getPageByRoute(location.pathname))
-  const items: MenuItem[] = [
-    getItem('Dashboard', appRoutes.dashboard, <LayoutOutlined />),
-    getItem('Explore', appRoutes.explore, <CompassOutlined />),
-  ];
 
-  return <Menu
-    theme={theme === AppTheme.light ? 'light' : 'dark'}
-    onClick={(item) => {
-      setSelectedKey(item.key as appRoutes)
-      navigate(`/${item.key}`)
-    }}
-    // style={{ width: 256 }}
-    defaultOpenKeys={['protocol']}
-    selectedKeys={[selectedKey]}
-    mode="inline"
-    items={items}
-  />
+  const onMenuItemClicked = (page: appRoutes) => {
+    setSelectedKey(page)
+    navigate(`/${page}`)
+  }
+
+  return <Box pad={{ left: '48px' }} gap={'32px'}>
+    <MenuItem
+      text={'Explore'}
+      icon={<ExplorerIcon />}
+      isSelected={selectedKey === appRoutes.explore}
+      onClick={() => onMenuItemClicked(appRoutes.explore)}
+    />
+    <MenuItem
+      text={'Dashboard'}
+      icon={<LayoutIcon />}
+      isSelected={selectedKey === appRoutes.dashboard}
+      onClick={() => onMenuItemClicked(appRoutes.dashboard)}
+    />
+  </Box>
 }
