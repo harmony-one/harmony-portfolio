@@ -14,12 +14,12 @@ export const AppRoutes = () => {
   return <Routes>
     <Route element={<AppLayout />}>
       <Route path={'/'} element={<Navigate to={appRoutes.dashboard} />} />
-      <Route index path={appRoutes.buy} element={<Buy />} />
-      <Route index path={appRoutes.AI} element={<AI />} />
+      {/*<Route index path={appRoutes.buy} element={<Buy />} />*/}
+      {/*<Route index path={appRoutes.AI} element={<AI />} />*/}
       <Route index path={appRoutes.swap} element={<Swap />} />
-      <Route index path={appRoutes.pools} element={<Pools />} />
-      <Route index path={appRoutes.lend} element={<Lend />} />
-      <Route index path={appRoutes.bridge} element={<Bridge />} />
+      {/*<Route index path={appRoutes.pools} element={<Pools />} />*/}
+      {/*<Route index path={appRoutes.lend} element={<Lend />} />*/}
+      {/*<Route index path={appRoutes.bridge} element={<Bridge />} />*/}
       <Route index path={appRoutes.explore} element={<Explore />} />
       <Route index path={appRoutes.dashboard} element={<Dashboard />} />
     </Route>

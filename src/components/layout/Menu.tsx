@@ -20,12 +20,19 @@ const getPageByRoute = (route: string, defaultRoute = appRoutes.dashboard) => {
   return defaultRoute
 }
 
+export const getIconByRoute = (route: appRoutes) => {
+  // if(route === appRoutes.lend) {
+  //   return <LendIcon />
+  // }
+  return <ExploreIcon />
+}
+
 const MenuConfig: Record<string, { icon: ReactNode }> = {
-  [appRoutes.buy]: { icon: <BuyIcon /> },
-  [appRoutes.AI]: { icon: <BrainIcon /> },
+  // [appRoutes.buy]: { icon: <BuyIcon /> },
+  // [appRoutes.AI]: { icon: <BrainIcon /> },
   [appRoutes.swap]: { icon: <ExchangeIcon /> },
-  [appRoutes.lend]: { icon: <LendIcon /> },
-  [appRoutes.bridge]: { icon: <BridgeIcon /> },
+  // [appRoutes.lend]: { icon: <LendIcon /> },
+  // [appRoutes.bridge]: { icon: <BridgeIcon /> },
   [appRoutes.dashboard]: { icon: <LayoutIcon /> },
   [appRoutes.explore]: { icon: <ExploreIcon /> },
 }
@@ -68,7 +75,7 @@ export const AppMenu = () => {
       return <MenuItem
         key={route}
         text={capitalizeFirstLetter(route)}
-        icon={menuConfig ? menuConfig.icon : <LayoutIcon />}
+        icon={getIconByRoute(route as appRoutes)}
         isSelected={isSelected}
         onClick={() => onMenuItemClicked(route as appRoutes)}
       />

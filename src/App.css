@@ -14,3 +14,7 @@ html, body {
 .ant-menu-dark .ant-menu-sub {
     background: #323232!important;
 }
+
+.swap_number_input {
+    padding-left: 0!important;
+}
