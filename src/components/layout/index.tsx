@@ -2,13 +2,13 @@ import React, {useEffect} from 'react'
 import {Box, Text} from "grommet";
 import {Outlet} from "react-router-dom";
 import {AppMenu} from './Menu'
-import {ConnectWallet} from "./ConnectWallet";
 import {Divider} from "antd";
 import {useAccount, useNetwork} from "wagmi";
 import {switchNetwork} from "@wagmi/core";
 import config from '../../config'
 import useIsTabActive from "../../hooks/useTabActive";
 import { ReactComponent as HarmonyLogo } from '../../assets/harmony-large.svg'
+import {UserAccount} from "./account";
 
 export const AppLayout = () => {
   // const theme = useAppTheme()
@@ -52,8 +52,8 @@ export const AppLayout = () => {
       <Box margin={{ top: '54px' }}>
         <AppMenu />
       </Box>
-      <Divider />
-      <ConnectWallet />
+      {/*<Divider />*/}
+      {/*<ConnectWallet />*/}
       {/*<Box pad={'16px'}>*/}
       {/*  {theme === AppTheme.dark &&*/}
       {/*      <Box onClick={() => setTheme(AppTheme.light)}><Sun /></Box>*/}
@@ -63,7 +63,10 @@ export const AppLayout = () => {
       {/*  }*/}
       {/*</Box>*/}
     </Box>
-    <Box width={'100%'} direction={'row'}>
+    <Box width={'100%'} style={{ position: 'relative' }}>
+      <Box style={{ position: 'absolute', top: '32px', right: '32px' }}>
+        <UserAccount />
+      </Box>
       <Outlet />
     </Box>
   </Box>

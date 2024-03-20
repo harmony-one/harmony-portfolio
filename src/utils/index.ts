@@ -15,3 +15,7 @@ export const truncateEthAddress = (address: string | `0x${string}`) => {
   if (!match) return address;
   return `${match[1]}…${match[2]}`;
 };
+
+export const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

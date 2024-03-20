@@ -4,7 +4,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {Box, Text} from "grommet";
 import {useAppTheme} from "../../hooks/useTheme";
 import {ReactComponent as LayoutIcon} from '../../assets/layout.svg'
-import {ReactComponent as ExplorerIcon} from '../../assets/explorer.svg'
+import {ReactComponent as ExploreIcon} from '../../assets/explorer.svg'
+import {ReactComponent as BridgeIcon} from '../../assets/bridge.svg'
+import {ReactComponent as LendIcon} from '../../assets/lend.svg'
+import {ReactComponent as ExchangeIcon} from '../../assets/exchange.svg'
+import {ReactComponent as BrainIcon} from '../../assets/brain.svg'
+import {ReactComponent as BuyIcon} from '../../assets/buy.svg'
+import {capitalizeFirstLetter} from "../../utils";
 
 const getPageByRoute = (route: string, defaultRoute = appRoutes.dashboard) => {
   const rawRoute = route.replace('/', '')
@@ -12,6 +18,16 @@ const getPageByRoute = (route: string, defaultRoute = appRoutes.dashboard) => {
     return rawRoute as appRoutes
   }
   return defaultRoute
+}
+
+const MenuConfig: Record<string, { icon: ReactNode }> = {
+  [appRoutes.buy]: { icon: <BuyIcon /> },
+  [appRoutes.AI]: { icon: <BrainIcon /> },
+  [appRoutes.swap]: { icon: <ExchangeIcon /> },
+  [appRoutes.lend]: { icon: <LendIcon /> },
+  [appRoutes.bridge]: { icon: <BridgeIcon /> },
+  [appRoutes.dashboard]: { icon: <LayoutIcon /> },
+  [appRoutes.explore]: { icon: <ExploreIcon /> },
 }
 
 const MenuItem = (props: {
@@ -44,17 +60,18 @@ export const AppMenu = () => {
   }
 
   return <Box pad={{ left: '48px' }} gap={'32px'}>
-    <MenuItem
-      text={'Explore'}
-      icon={<ExplorerIcon />}
-      isSelected={selectedKey === appRoutes.explore}
-      onClick={() => onMenuItemClicked(appRoutes.explore)}
-    />
-    <MenuItem
-      text={'Dashboard'}
-      icon={<LayoutIcon />}
-      isSelected={selectedKey === appRoutes.dashboard}
-      onClick={() => onMenuItemClicked(appRoutes.dashboard)}
-    />
+    {Object.keys(appRoutes).map((route) => {
+      const isSelected = selectedKey === route
+      const menuConfig = MenuConfig[route]
+      console.log('menuConfig', menuConfig)
+
+      return <MenuItem
+        key={route}
+        text={capitalizeFirstLetter(route)}
+        icon={menuConfig ? menuConfig.icon : <LayoutIcon />}
+        isSelected={isSelected}
+        onClick={() => onMenuItemClicked(route as appRoutes)}
+      />
+    })}
   </Box>
 }
