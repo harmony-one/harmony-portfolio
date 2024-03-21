@@ -69,9 +69,6 @@ export const AppMenu = () => {
   return <Box pad={{ left: '48px' }} gap={'32px'}>
     {Object.keys(appRoutes).map((route) => {
       const isSelected = selectedKey === route
-      const menuConfig = MenuConfig[route]
-      console.log('menuConfig', menuConfig)
-
       return <MenuItem
         key={route}
         text={capitalizeFirstLetter(route)}

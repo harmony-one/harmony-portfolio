@@ -4,9 +4,10 @@ import {SwapToken} from "../../types";
 import { ReactComponent as ArrowDownImg } from '../../assets/arrow_down.svg'
 import { ReactComponent as HarmonyImg } from '../../assets/harmony.svg'
 import { ReactComponent as ArrowDownLongImg } from '../../assets/arrow_down_long.svg'
-import {Button, InputNumber} from "antd";
+import {Button, InputNumber, Modal} from "antd";
 import {InputNumberProps} from "antd/es/input-number";
 import styled from "styled-components";
+import { TokenSelect } from './TokenSelect'
 
 export type SwapSideType = 'pay' | 'receive'
 
@@ -25,51 +26,46 @@ const tokensList: SwapToken[] = [{
   decimals: 6
 }]
 
-
-const TokenSelect = (props: {
-  token: SwapToken | null;
-  onSelect?: (token: SwapToken | null) => void;
-}) => {
-  const { token } = props
-
-  return <Box
-    direction={'row'}
-    background={'#323232'}
-    round={'26px'}
-    pad={'10px 16px'}
-    justify={'between'}
-    align={'center'}
-    gap={'16px'}
-  >
-    {!token &&
-        <Box>
-            <Text size={'16px'} weight={'bold'}>Select Token</Text>
-        </Box>
-    }
-    <Box>
-      <ArrowDownImg />
-    </Box>
-  </Box>
-}
-
 interface SwapSideProps {
   type: SwapSideType
   data: SwapSideState
+  onChangeAmount: (value: string) => void
 }
 
+type ValueType = string | number | undefined | null
+
+const formatterHelper = (value: ValueType) => {
+  const valueStr = (value || '').toString()
+  const [decimalPart, fractionalPart = ''] = valueStr.split('.')
+  const decimalFormatted = `${decimalPart}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const fractionalFormatted = fractionalPart ? `.${fractionalPart}` : ''
+  return decimalFormatted + fractionalFormatted
+}
+const parserHelper = (value: ValueType) => `${value}`.replace(/\$\s?|(,*)/g, '')
+
+
 const SwapSide = (props: SwapSideProps) => {
-  const { type, data: { token, amount } } = props
+  const {
+    type,
+    data: { token, amount },
+    onChangeAmount
+  } = props
 
   const inputProps: InputNumberProps = {
     className: 'swap_number_input',
     controls: false,
     autoFocus: true,
     value: amount,
+    formatter: formatterHelper,
+    parser: parserHelper,
     style: {
       width: '100%',
       border: 'none',
       background: 'transparent',
       fontSize: '52px',
+    },
+    onChange: (value) => {
+      onChangeAmount(value?.toString() || '')
     }
   }
 
@@ -123,14 +119,40 @@ export const SwapWidget = () => {
   const [statePay, setStatePay] = useState<SwapSideState>(defaultSwapSideState)
   const [stateReceive, setStateReceive] = useState<SwapSideState>(defaultSwapSideState)
 
+  const onPayAmountChanged = (amount: string) => {
+    setStatePay(currentState => {
+      return {
+        ...currentState,
+        amount
+      }
+    })
+  }
+
+  const onReceiveAmountChanged = (amount: string) => {
+    setStateReceive(currentState => {
+      return {
+        ...currentState,
+        amount
+      }
+    })
+  }
+
   return <Box
     background={'#323232'}
     pad={'24px'}
     round={'28px'}
   >
     <Box gap={'4px'} style={{ position: 'relative' }}>
-      <SwapSide type={'pay'} data={statePay} />
-      <SwapSide type={'receive'} data={stateReceive} />
+      <SwapSide
+        type={'pay'}
+        data={statePay}
+        onChangeAmount={onPayAmountChanged}
+      />
+      <SwapSide
+        type={'receive'}
+        data={stateReceive}
+        onChangeAmount={onReceiveAmountChanged}
+      />
       <SideSwitch>
         <ArrowDownLongImg />
       </SideSwitch>
