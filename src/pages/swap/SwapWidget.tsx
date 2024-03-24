@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import { Box, Text } from 'grommet'
 import {SwapToken} from "../../types";
 import { ReactComponent as ArrowDownImg } from '../../assets/arrow_down.svg'
@@ -8,28 +8,30 @@ import {Button, InputNumber, Modal} from "antd";
 import {InputNumberProps} from "antd/es/input-number";
 import styled from "styled-components";
 import { TokenSelect } from './TokenSelect'
+import {useContractWrite} from "wagmi";
+import config from "../../config";
+import wethABI from "../../abi/weth.json";
+import {GradientFilledButton} from "../../components/button";
 
 export type SwapSideType = 'pay' | 'receive'
 
 interface SwapSideState {
   amount: string
   token: SwapToken | null
+  balance: bigint
 }
 
 const defaultSwapSideState: SwapSideState = {
   amount: '0',
-  token: null
+  token: null,
+  balance: 0n
 }
-
-const tokensList: SwapToken[] = [{
-  name: 'ONE',
-  decimals: 6
-}]
 
 interface SwapSideProps {
   type: SwapSideType
   data: SwapSideState
   onChangeAmount: (value: string) => void
+  onChangeToken: (token: SwapToken) => void
 }
 
 type ValueType = string | number | undefined | null
@@ -47,8 +49,9 @@ const parserHelper = (value: ValueType) => `${value}`.replace(/\$\s?|(,*)/g, '')
 const SwapSide = (props: SwapSideProps) => {
   const {
     type,
-    data: { token, amount },
-    onChangeAmount
+    data: { token, amount, balance },
+    onChangeAmount,
+    onChangeToken
   } = props
 
   const inputProps: InputNumberProps = {
@@ -67,6 +70,10 @@ const SwapSide = (props: SwapSideProps) => {
     onChange: (value) => {
       onChangeAmount(value?.toString() || '')
     }
+  }
+
+  const onSelectToken = (token: SwapToken) => {
+    props.onChangeToken(token)
   }
 
   return <Box
@@ -92,15 +99,18 @@ const SwapSide = (props: SwapSideProps) => {
       align={'end'}
       justify={'center'}
     >
-      <TokenSelect token={token} />
+      <TokenSelect token={token} onSelect={onSelectToken} />
+      {token &&
+          <Box style={{ position: 'absolute', bottom: '24px', right: '32px' }}>
+              <Text>Balance: {balance.toString()}</Text>
+          </Box>
+      }
     </Box>
   </Box>
 }
 
-const SwapButton = styled(Box)`
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 25px;
-    padding: 16px;
+const SwapButton = styled(GradientFilledButton)`
+    padding: 20px;
     text-align: center;
 `
 
@@ -118,6 +128,16 @@ const SideSwitch = styled(Box)`
 export const SwapWidget = () => {
   const [statePay, setStatePay] = useState<SwapSideState>(defaultSwapSideState)
   const [stateReceive, setStateReceive] = useState<SwapSideState>(defaultSwapSideState)
+
+  const {
+    isLoading: wrapIsLoading,
+    writeAsync: wrapAsync,
+    data: wrapData
+  } = useContractWrite({
+    address: config.wrappedOneContractAddress as `0x${string}`,
+    abi: wethABI,
+    functionName: 'deposit',
+  })
 
   const onPayAmountChanged = (amount: string) => {
     setStatePay(currentState => {
@@ -137,6 +157,38 @@ export const SwapWidget = () => {
     })
   }
 
+  const onPayTokenChange = (token: SwapToken) => {
+    setStatePay(currentState => {
+      return {
+        ...currentState,
+        amount: '0',
+        token
+      }
+    })
+  }
+
+  const onReceiveTokenChange = (token: SwapToken) => {
+    setStateReceive(currentState => {
+      return {
+        ...currentState,
+        amount: '0',
+        token
+      }
+    })
+  }
+
+  const onWrapClicked = async () => {
+    try {
+      const amount = 100000000000000000n
+      const data = await wrapAsync({
+        value: amount
+      })
+      console.log('deposit result', data)
+    } catch (e) {
+      console.error('Failed wrap:', e)
+    }
+  }
+
   return <Box
     background={'#323232'}
     pad={'24px'}
@@ -147,18 +199,23 @@ export const SwapWidget = () => {
         type={'pay'}
         data={statePay}
         onChangeAmount={onPayAmountChanged}
+        onChangeToken={onPayTokenChange}
       />
       <SwapSide
         type={'receive'}
         data={stateReceive}
         onChangeAmount={onReceiveAmountChanged}
+        onChangeToken={onReceiveTokenChange}
       />
-      <SideSwitch>
+      <SideSwitch onClick={() => {
+        setStatePay(stateReceive)
+        setStateReceive(statePay)
+      }}>
         <ArrowDownLongImg />
       </SideSwitch>
     </Box>
     <Box margin={{ top: '40px' }}>
-      <SwapButton>
+      <SwapButton onClick={onWrapClicked}>
         <Text color={'#323232'} size={'30px'} weight={500}>Swap</Text>
       </SwapButton>
     </Box>
