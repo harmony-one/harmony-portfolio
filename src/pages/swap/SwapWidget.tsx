@@ -132,11 +132,19 @@ export const SwapWidget = () => {
   const {
     isLoading: wrapIsLoading,
     writeAsync: wrapAsync,
-    data: wrapData
   } = useContractWrite({
     address: config.wrappedOneContractAddress as `0x${string}`,
     abi: wethABI,
     functionName: 'deposit',
+  })
+
+  const {
+    isLoading: unwrapIsLoading,
+    writeAsync: unwrapAsync,
+  } = useContractWrite({
+    address: config.wrappedOneContractAddress as `0x${string}`,
+    abi: wethABI,
+    functionName: 'withdraw',
   })
 
   const onPayAmountChanged = (amount: string) => {
@@ -183,7 +191,19 @@ export const SwapWidget = () => {
       const data = await wrapAsync({
         value: amount
       })
-      console.log('deposit result', data)
+      console.log('Deposit result', data)
+    } catch (e) {
+      console.error('Failed wrap:', e)
+    }
+  }
+
+  const onUnwrapClicked = async () => {
+    try {
+      const amount = 100000000000000000n
+      const data = await unwrapAsync({
+        args: [amount]
+      })
+      console.log('Withdraw result', data)
     } catch (e) {
       console.error('Failed wrap:', e)
     }
@@ -215,9 +235,18 @@ export const SwapWidget = () => {
       </SideSwitch>
     </Box>
     <Box margin={{ top: '40px' }}>
-      <SwapButton onClick={onWrapClicked}>
-        <Text color={'#323232'} size={'30px'} weight={500}>Swap</Text>
-      </SwapButton>
+      {statePay.token?.isNative && stateReceive.token?.id === 'WONE' ?
+          <SwapButton onClick={onWrapClicked}>
+              <Text color={'#323232'} size={'30px'} weight={500}>Wrap</Text>
+          </SwapButton> :
+        statePay.token?.id === 'WONE' && stateReceive.token?.isNative ?
+          <SwapButton onClick={onUnwrapClicked}>
+            <Text color={'#323232'} size={'30px'} weight={500}>Unwrap</Text>
+          </SwapButton> :
+        <SwapButton>
+          <Text color={'#323232'} size={'30px'} weight={500}>Swap</Text>
+        </SwapButton>
+      }
     </Box>
   </Box>
 }

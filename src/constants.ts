@@ -15,5 +15,12 @@ export const TokensList: SwapToken[] = [{
   id: 'ONE',
   name: 'ONE',
   decimals: 18,
-  address: '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a'
+  address: '',
+  isNative: true
+}, {
+  id: 'WONE',
+  name: 'WONE',
+  decimals: 18,
+  address: '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a',
+  isNative: false
 }]

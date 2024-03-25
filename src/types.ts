@@ -3,4 +3,5 @@ export interface SwapToken {
   name: string
   decimals: number
   address: string
+  isNative: boolean
 }

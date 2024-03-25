@@ -12,13 +12,20 @@ const TokenItem = styled(Box)<{ isSelected: boolean }>`
     padding: 6px 12px 6px 6px;
     border-radius: 16px;
     cursor: pointer;
-    
+
     ${props => props.isSelected &&
-        `background-color: rgba(76, 130, 251, 0.24);`
+        `
+        background-color: rgba(76, 130, 251, 0.24);
+        cursor: default;
+        `
     }
-    
-    &:hover {
+
+    ${props => !props.isSelected &&
+      `
+      &:hover {
         background-color: rgba(152, 161, 192, 0.08);
+      }
+      `
     }
 `
 
@@ -40,12 +47,12 @@ export const TokenSelect = (props: {
     pad={'10px 16px'}
     justify={'between'}
     align={'center'}
-    gap={'16px'}
   >
     <Box
       direction={'row'}
       align={'center'}
       justify={'between'}
+      gap={'16px'}
       onClick={() => setModalOpen(!isModalOpen)}
     >
       <Text
@@ -67,12 +74,12 @@ export const TokenSelect = (props: {
       <Input
         prefix={<SearchOutlined />}
       />
-      <Box direction={'row'}>
+      <Box direction={'row'} margin={{ top: '16px' }} gap={'8px'}>
         {TokensList.map((token) => {
           const isSelected = Boolean(props.token && props.token.id === token.id)
           return <TokenItem
             isSelected={isSelected}
-            onClick={() => onTokenClick(token)}
+            onClick={isSelected ? undefined : () => onTokenClick(token)}
           >
             <Text>{token.name}</Text>
           </TokenItem>
