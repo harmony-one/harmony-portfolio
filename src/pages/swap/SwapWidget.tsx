@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import { Box, Text } from 'grommet'
 import {SwapToken} from "../../types";
 import { ReactComponent as ArrowDownImg } from '../../assets/arrow_down.svg'
@@ -8,7 +8,7 @@ import {Button, InputNumber, Modal} from "antd";
 import {InputNumberProps} from "antd/es/input-number";
 import styled from "styled-components";
 import { TokenSelect } from './TokenSelect'
-import {useContractWrite} from "wagmi";
+import {useAccount, useBalance, useContractWrite} from "wagmi";
 import config from "../../config";
 import wethABI from "../../abi/weth.json";
 import {GradientFilledButton} from "../../components/button";
@@ -18,13 +18,13 @@ export type SwapSideType = 'pay' | 'receive'
 interface SwapSideState {
   amount: string
   token: SwapToken | null
-  balance: bigint
+  balance: string
 }
 
 const defaultSwapSideState: SwapSideState = {
   amount: '0',
   token: null,
-  balance: 0n
+  balance: ''
 }
 
 interface SwapSideProps {
@@ -73,7 +73,7 @@ const SwapSide = (props: SwapSideProps) => {
   }
 
   const onSelectToken = (token: SwapToken) => {
-    props.onChangeToken(token)
+    onChangeToken(token)
   }
 
   return <Box
@@ -84,6 +84,7 @@ const SwapSide = (props: SwapSideProps) => {
     background={'rgba(255, 255, 255, 0.22)'}
     round={'18px'}
     pad={'28px 20px'}
+    style={{ position: 'relative' }}
   >
     <Box>
       <Box>
@@ -126,8 +127,21 @@ const SideSwitch = styled(Box)`
 `
 
 export const SwapWidget = () => {
+  const { address: userAddress, isConnected } = useAccount()
   const [statePay, setStatePay] = useState<SwapSideState>(defaultSwapSideState)
   const [stateReceive, setStateReceive] = useState<SwapSideState>(defaultSwapSideState)
+
+  const payBalance = useBalance({
+    address: userAddress,
+    enabled: isConnected && !statePay.token?.isNative && !!statePay.token?.address,
+    token: statePay.token ? statePay.token.address as `0x${string}` : undefined
+  })
+
+  const receiveBalance = useBalance({
+    address: userAddress,
+    enabled: isConnected,
+    token: stateReceive.token ? stateReceive.token.address as `0x${string}` : undefined
+  })
 
   const {
     isLoading: wrapIsLoading,
@@ -146,6 +160,28 @@ export const SwapWidget = () => {
     abi: wethABI,
     functionName: 'withdraw',
   })
+
+  useEffect(() => {
+    if(payBalance.data) {
+      setStatePay(currentState => {
+        return {
+          ...currentState,
+          balance: payBalance.data ? payBalance.data.formatted : ''
+        }
+      })
+    }
+  }, [payBalance.data]);
+
+  useEffect(() => {
+    if(receiveBalance.data) {
+      setStateReceive(currentState => {
+        return {
+          ...currentState,
+          balance: receiveBalance.data ? receiveBalance.data.formatted : ''
+        }
+      })
+    }
+  }, [receiveBalance.data]);
 
   const onPayAmountChanged = (amount: string) => {
     setStatePay(currentState => {
